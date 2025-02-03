@@ -2,6 +2,17 @@
 # Build and install code generators and runtime support for generated parsers.
 #
 
+# Configure necesseary build environment when building in Cygwin on Windows
+ifeq ($(shell uname -o),Cygwin)
+  # Set the propper c compiler
+  CC = x86_64-w64-mingw32-gcc
+  # Set the propper ar
+  AR = x86_64-w64-mingw32-ar
+  # These variable must be exported to subordinate make invocations
+  export CC
+  export AR
+endif
+
 PROJECT_ROOT := $(shell pwd)
 
 # Generate this with ./configure
