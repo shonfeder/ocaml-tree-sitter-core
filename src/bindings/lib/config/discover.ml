@@ -30,5 +30,11 @@ let () =
           | None -> default
           | Some deps -> deps
     in
+    let cflags =
+      match C.ocaml_config_var c "ccomp_type" with
+      | "cc" -> "-Wall"
+      | _ -> failwith "msvc compilation isn't supported"
+    in
+    let conf = { conf with cflags = conf.cflags @ cflags } in
     C.Flags.write_sexp "c_flags.sexp" conf.cflags;
     C.Flags.write_sexp "c_library_flags.sexp" conf.libs)
