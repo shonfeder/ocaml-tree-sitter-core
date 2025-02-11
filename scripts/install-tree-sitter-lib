@@ -52,9 +52,18 @@ dir_name=$(dirname "$BASH_SOURCE")
 "$dir_name"/update-version-symlinks
 "$dir_name"/download-tree-sitter --lazy
 
+# For the Makefile of tree-sitter
+if [[ -z "${CC:-}" ]]; then
+  CC=$(opam var sys-ocaml-cc 2>/dev/null || \
+         opam exec -- ocamlc -config-var c_compiler 2>/dev/null || \
+         opam exec -- ocamlopt -config-var c_compiler 2>/dev/null)
+fi
+: ${AR:=${CC:+$(echo $CC | sed -E 's/(-?)[^-]*$/\1ar/')}}
+: ${STRIP:=${CC:+$(echo $CC | sed -E 's/(-?)[^-]*$/\1strip/')}}
+
 (
   cd downloads/tree-sitter
-  make PREFIX="$prefix"
+  make PREFIX="$prefix" "${CC:+CC=$CC}" "${AR:+AR=$AR}" "${STRIP:+STRIP=$STRIP}"
   make PREFIX="$prefix" install
 )
 
